@@ -1,4 +1,4 @@
-name: Build Jusou Android APK
+name: Build APK
 
 on:
   workflow_dispatch:
@@ -8,34 +8,18 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Extract project ZIP
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y unzip
-          mkdir -p extracted
-          unzip -q jusou-android-project.zip -d extracted
-          PROJECT_DIR="$(find extracted -name package.json -not -path '*/node_modules/*' -print -quit | xargs -r dirname)"
-          if [ -z "$PROJECT_DIR" ] || [ ! -f "$PROJECT_DIR/package.json" ]; then
-            echo "ERROR: package.json not found in ZIP"
-            exit 1
-          fi
-          cp -a "$PROJECT_DIR"/. .
+      - name: Check index.html
+        run: test -f index.html || (echo "ERROR: index.html not found in repo root" && exit 1)
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build web assets
-        run: npm run build
+          node-version: 22
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -43,11 +27,18 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Accept Android licenses
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
 
-      - name: Sync Capacitor Android project
-        run: npx cap sync android
+      - name: Create Capacitor project
+        run: |
+          mkdir -p www
+          cp index.html www/
+          npm init -y
+          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7
+          npx cap init "聚搜" com.jusou.app --web-dir=www
+          npx cap add android
+          npx cap sync android
 
       - name: Build debug APK
         working-directory: android
@@ -58,6 +49,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: jusou-debug-apk
+          name: jusou-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
