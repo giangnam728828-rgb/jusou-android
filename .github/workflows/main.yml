@@ -9,16 +9,39 @@ on:
 jobs:
   build:
     runs-on: ubuntu-24.04
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Check index.html
+      - name: Prepare website files
         run: |
-          if [ ! -f index.html ]; then
-            echo "index.html not found in repo root"
+          set -e
+
+          if [ ! -f jusou-android-project.zip ]; then
+            echo "ERROR: jusou-android-project.zip not found"
             exit 1
           fi
+
+          sudo apt-get update
+          sudo apt-get install -y unzip
+
+          mkdir -p extracted www
+          unzip -oq jusou-android-project.zip -d extracted
+
+          INDEX_PATH="$(find extracted -type f -name index.html -print -quit)"
+
+          if [ -z "$INDEX_PATH" ]; then
+            echo "ERROR: index.html not found inside ZIP"
+            echo "Files extracted from ZIP:"
+            find extracted -maxdepth 4 -type f | head -100
+            exit 1
+          fi
+
+          WEB_DIR="$(dirname "$INDEX_PATH")"
+          echo "Website entry: $INDEX_PATH"
+
+          cp -a "$WEB_DIR"/. www/
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -31,14 +54,9 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Accept Android licenses
-        run: |
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
-
       - name: Create Capacitor project
         run: |
-          mkdir -p www
-          cp index.html www/
+          set -e
           npm init -y
           npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7
           npx cap init "聚搜" com.jusou.app --web-dir=www
