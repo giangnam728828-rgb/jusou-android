@@ -62,6 +62,32 @@ jobs:
           echo "=== bridge files ==="
           find www -type f \( -name '*bridge*' -o -name '*capacitor*' \) -print
 
+      - name: Replace external browser bridge
+        run: |
+          set -e
+          cat > www/app-bridge.js <<'EOF'
+          import { Capacitor } from '@capacitor/core';
+          import { InAppBrowser, DefaultWebViewOptions } from '@capacitor/inappbrowser';
+
+          if (Capacitor.isNativePlatform()) {
+            window.JUSOU_NATIVE_OPEN = async (url) => {
+              if (!url) return;
+
+              try {
+                const parsed = new URL(url);
+                if (!['https:', 'http:'].includes(parsed.protocol)) return;
+
+                await InAppBrowser.openInWebView({
+                  url: parsed.href,
+                  options: DefaultWebViewOptions
+                });
+              } catch (e) {
+                console.error('聚搜打开站内浏览页失败', e);
+              }
+            };
+          }
+          EOF
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -77,9 +103,46 @@ jobs:
         run: |
           set -e
           npm init -y
-          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7
+          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/inappbrowser@2.5.5
+          npm install --save-dev esbuild
+          npx esbuild www/app-bridge.js --bundle --format=esm --platform=browser --outfile=www/app-bridge.bundle.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path("www/index.html")
+          s = p.read_text(encoding="utf-8")
+          new = 'src="/app-bridge.bundle.js"'
+          s, count = re.subn(r'''src=(["'])/?app-bridge\.js\1''', new, s)
+          if count == 0:
+              tag = '<script type="module" src="/app-bridge.bundle.js"></script>'
+              if "</head>" in s:
+                  s = s.replace("</head>", tag + "</head>", 1)
+              else:
+                  s = tag + s
+              print("index.html 中没有找到 app-bridge.js 引用，已自动插入打包后的脚本")
+          else:
+              print("已切换到打包后的 app-bridge.bundle.js")
+          p.write_text(s, encoding="utf-8")
+          PY
           npx cap init "聚搜" com.jusou.app --web-dir=www
           npx cap add android
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path("android/variables.gradle")
+          s = p.read_text()
+          s, count = re.subn(
+              r'minSdkVersion\s*=\s*\d+',
+              'minSdkVersion = 26',
+              s,
+              count=1
+          )
+          if count != 1:
+              raise SystemExit("ERROR: 无法定位 minSdkVersion，请检查 android/variables.gradle")
+          p.write_text(s)
+          PY
           npx cap sync android
 
       - name: Build debug APK
