@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - test/in-app-search-navigation
 
 jobs:
   build:
@@ -42,6 +43,24 @@ jobs:
           echo "Website entry: $INDEX_PATH"
 
           cp -a "$WEB_DIR"/. www/
+
+      - name: Inspect search navigation source
+        run: |
+          echo "=== Navigation-related matches ==="
+          grep -RniE 'JUSOU_NATIVE_OPEN|function openUrl|function open\(|Browser\.open' www || true
+          echo "=== index.html around openUrl ==="
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("www/index.html")
+          s = p.read_text(errors="replace")
+          for key in ["function openUrl", "function open(", "JUSOU_NATIVE_OPEN"]:
+              i = s.find(key)
+              if i >= 0:
+                  print("\n---", key, "---")
+                  print(s[max(0, i-500):i+1800])
+          PY
+          echo "=== bridge files ==="
+          find www -type f \( -name '*bridge*' -o -name '*capacitor*' \) -print
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
