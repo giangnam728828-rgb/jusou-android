@@ -95,138 +95,369 @@ jobs:
           cat > www/ui-redesign.css <<'CSS'
           :root {
             color-scheme: light;
-            --bg: #f5f7fb;
+            --bg: #f4f6fb;
             --card: #ffffff;
-            --txt: #192238;
-            --sub: #748096;
-            --line: #e5eaf2;
-            --acc: #4263eb;
-            --shadow: 0 5px 20px rgba(30, 45, 80, .06);
+            --txt: #202943;
+            --sub: #7d879d;
+            --line: #e7ebf4;
+            --acc: #526df5;
+            --acc2: #7c5cfa;
+            --shadow: 0 5px 20px rgba(36, 53, 99, .07);
+            --soft: #edf1ff;
           }
 
           :root[data-theme="dark"] {
             color-scheme: dark;
-            --bg: #10131a;
-            --card: #191e28;
-            --txt: #f0f3fa;
-            --sub: #9ba6ba;
-            --line: #2b3342;
-            --acc: #8299ff;
-            --shadow: 0 5px 20px rgba(0, 0, 0, .15);
+            --bg: #10141e;
+            --card: #1a2130;
+            --txt: #eef2ff;
+            --sub: #a0abc1;
+            --line: #2c3548;
+            --acc: #8ca0ff;
+            --acc2: #ad91ff;
+            --shadow: 0 6px 22px rgba(0, 0, 0, .18);
+            --soft: #252e48;
+          }
+
+          * {
+            box-sizing: border-box;
           }
 
           html {
-            background: var(--bg);
+            background: var(--bg) !important;
+            scroll-behavior: smooth;
           }
 
           body {
+            margin: 0;
             background: var(--bg) !important;
             color: var(--txt) !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+              "Noto Sans SC", "Microsoft YaHei", sans-serif;
+            -webkit-tap-highlight-color: transparent;
             transition: background .2s, color .2s;
           }
 
           .page {
+            width: 100%;
             max-width: 760px;
             margin: 0 auto;
-            padding-left: 16px;
-            padding-right: 16px;
+            padding: 18px 16px 108px !important;
           }
 
-          header, .brand {
-            color: var(--txt) !important;
+          header {
+            margin-bottom: 20px;
           }
 
           .brand {
             display: flex;
             align-items: center;
-            justify-content: flex-start;
-            gap: 10px;
-          }
-
-          .brand > h1 {
-            margin-right: auto;
-          }
-
-          .brand-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            gap: 12px;
+            margin-bottom: 8px;
+            color: var(--txt) !important;
           }
 
           .logo {
-            border-radius: 14px !important;
-            box-shadow: 0 5px 14px rgba(66, 99, 235, .22);
+            width: 46px;
+            height: 46px;
+            flex-shrink: 0;
+            border-radius: 15px !important;
+            box-shadow: 0 5px 14px rgba(82, 109, 245, .23);
           }
 
-          h1, h2, h3, p, label {
-            color: var(--txt);
+          .brand h1, h1 {
+            color: var(--txt) !important;
+            font-size: 23px;
+            font-weight: 800;
+            letter-spacing: -.6px;
+          }
+
+          .sub {
+            color: var(--sub) !important;
+            font-size: 12px;
+            line-height: 1.7;
           }
 
           .theme-toggle {
+            display: grid;
+            place-items: center;
             width: 42px;
             height: 42px;
             flex-shrink: 0;
+            margin-left: auto;
+            padding: 0;
             border: 1px solid var(--line);
-            border-radius: 14px;
+            border-radius: 15px;
             background: var(--card);
             color: var(--txt);
             font-size: 21px;
-          }
-
-          input, select, textarea, .bar, .ipt {
-            background: var(--card) !important;
-            color: var(--txt) !important;
-            border-color: var(--line) !important;
-            border-radius: 15px !important;
+            box-shadow: var(--shadow);
           }
 
           .bar {
-            box-shadow: var(--shadow);
-          }
-
-          .go, button.primary {
-            border-radius: 14px;
-          }
-
-          .chip, .tabs, .card, .mitem, .sheet,
-          .tabbar, .tb {
-            color: var(--txt);
-          }
-
-          .chip, .card, .mitem, .sheet {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 60px;
+            padding: 7px !important;
+            border: 1px solid var(--line) !important;
+            border-radius: 20px !important;
             background: var(--card) !important;
-            border-color: var(--line) !important;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow) !important;
+          }
+
+          #engbtn, .engbtn {
+            flex-shrink: 0;
+            border-radius: 14px !important;
+          }
+
+          #kw {
+            min-width: 0;
+            flex: 1;
+            height: 44px;
+            padding: 0 8px !important;
+            border: 0 !important;
+            outline: none;
+            background: transparent !important;
+            color: var(--txt) !important;
+            font-size: 15px;
+            box-shadow: none !important;
+          }
+
+          #kw:focus {
+            outline: none;
+          }
+
+          #clr {
+            flex-shrink: 0;
+          }
+
+          #go, .go {
+            min-width: 66px;
+            height: 44px;
+            flex-shrink: 0;
+            padding: 0 16px !important;
+            border: 0 !important;
+            border-radius: 14px !important;
+            background: linear-gradient(135deg, var(--acc), var(--acc2)) !important;
+            color: #fff !important;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(82, 109, 245, .22);
+          }
+
+          #tabs, .tabs {
+            display: flex;
+            gap: 8px;
+            margin: 18px 0 16px;
+            padding: 4px 0 7px;
+            overflow-x: auto;
+            scrollbar-width: none;
+          }
+
+          #tabs::-webkit-scrollbar, .tabs::-webkit-scrollbar {
+            display: none;
+          }
+
+          .tab, .chip {
+            flex-shrink: 0;
+            border: 1px solid var(--line) !important;
+            border-radius: 13px !important;
+            background: var(--card) !important;
+            color: var(--sub) !important;
+            transition: background .15s, color .15s;
+          }
+
+          .tab.active, .tab.on, .chip.active, .chip.on,
+          .tab[aria-selected="true"] {
+            border-color: var(--acc) !important;
+            background: var(--soft) !important;
+            color: var(--acc) !important;
+            font-weight: 700;
+          }
+
+          .tools {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 8px 0 13px;
+          }
+
+          #cnt {
+            color: var(--sub);
+            font-size: 12px;
+          }
+
+          #add, .addbtn {
+            border: 1px solid var(--line) !important;
+            border-radius: 12px !important;
+            background: var(--card) !important;
+            color: var(--acc) !important;
+            font-size: 13px;
+            font-weight: 700;
           }
 
           .grid {
-            gap: 12px;
+            display: grid !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            gap: 12px !important;
+            align-items: stretch;
           }
 
           .card {
-            border-radius: 18px !important;
-            transition: transform .15s;
+            position: relative;
+            display: flex;
+            min-width: 0;
+            min-height: 116px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 6px 13px !important;
+            overflow: hidden;
+            border: 1px solid var(--line) !important;
+            border-radius: 19px !important;
+            background: var(--card) !important;
+            color: var(--txt) !important;
+            box-shadow: var(--shadow) !important;
+            transition: transform .15s, border-color .15s;
           }
 
-          .card:active, .chip:active {
-            transform: scale(.98);
+          .card:active {
+            transform: scale(.97);
+          }
+
+          .ico {
+            display: grid;
+            place-items: center;
+            width: 49px;
+            height: 49px;
+            flex-shrink: 0;
+            overflow: hidden;
+            border-radius: 16px !important;
+            background: var(--soft);
+          }
+
+          .ico img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 13px;
           }
 
           .nm {
+            width: 100%;
+            overflow-wrap: anywhere;
+            color: var(--txt) !important;
+            font-size: 13px;
+            font-weight: 650;
+            line-height: 1.4;
+            text-align: center;
+          }
+
+          .nm small {
+            color: var(--sub) !important;
+            font-size: 11px;
+            font-weight: 400;
+          }
+
+          .star {
+            position: absolute;
+            top: 5px;
+            right: 7px;
+            z-index: 1;
+            font-size: 15px;
+          }
+
+          .card button, .card .del, .card .edit {
+            max-width: 100%;
+          }
+
+          #settings, .sheet {
+            border-color: var(--line) !important;
+            border-radius: 22px !important;
+            background: var(--card) !important;
+            color: var(--txt) !important;
+            box-shadow: var(--shadow);
+          }
+
+          .sheet {
+            padding: 22px !important;
+          }
+
+          .ipt, input, select, textarea {
+            max-width: 100%;
+            border: 1px solid var(--line) !important;
+            border-radius: 13px !important;
+            background: var(--bg) !important;
+            color: var(--txt) !important;
+            outline-color: var(--acc);
+          }
+
+          input, select, textarea {
+            padding: 11px 12px;
+          }
+
+          button {
+            transition: transform .12s, opacity .12s;
+            cursor: pointer;
+          }
+
+          button:active {
+            opacity: .85;
+          }
+
+          .mitem {
+            border-color: var(--line) !important;
+            border-radius: 14px !important;
+            background: var(--card) !important;
             color: var(--txt) !important;
           }
 
-          .tabbar {
-            background: var(--card) !important;
-            border-color: var(--line) !important;
-          }
-
-          .sub, .desc, .hint, .nm small {
-            color: var(--sub) !important;
-          }
-
           .mask {
-            background: rgba(10, 15, 28, .48);
+            background: rgba(10, 16, 32, .56) !important;
+            backdrop-filter: blur(5px);
+          }
+
+          .tabbar {
+            position: fixed;
+            z-index: 20;
+            right: 12px;
+            bottom: max(10px, env(safe-area-inset-bottom));
+            left: 12px;
+            display: flex;
+            justify-content: space-around;
+            max-width: 736px;
+            margin: 0 auto;
+            padding: 8px 5px;
+            border: 1px solid var(--line) !important;
+            border-radius: 20px !important;
+            background: var(--card) !important;
+            box-shadow: 0 8px 28px rgba(30, 43, 75, .13);
+          }
+
+          .tb {
+            flex: 1;
+            min-width: 0;
+            padding: 9px 2px !important;
+            border: 0 !important;
+            border-radius: 13px !important;
+            background: transparent !important;
+            color: var(--sub) !important;
+            font-size: 12px;
+            text-align: center;
+          }
+
+          .tb.active, .tb.on, .tb[aria-current="page"] {
+            background: var(--soft) !important;
+            color: var(--acc) !important;
+            font-weight: 700;
+          }
+
+          .desc, .hint, label, h2, h3, p {
+            color: var(--txt);
           }
 
           ::placeholder {
@@ -234,18 +465,51 @@ jobs:
             opacity: .8;
           }
 
-          button {
-            cursor: pointer;
-          }
-
-          @media (max-width: 480px) {
+          @media (min-width: 520px) {
             .page {
-              padding-left: 14px;
-              padding-right: 14px;
+              padding: 24px 22px 110px !important;
             }
 
             .grid {
-              gap: 10px;
+              grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+              gap: 14px !important;
+            }
+
+            .card {
+              min-height: 126px;
+            }
+          }
+
+          @media (min-width: 700px) {
+            .grid {
+              grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+            }
+          }
+
+          @media (max-width: 360px) {
+            .page {
+              padding-right: 11px !important;
+              padding-left: 11px !important;
+            }
+
+            .grid {
+              gap: 8px !important;
+            }
+
+            .card {
+              min-height: 105px;
+              padding: 12px 4px !important;
+              border-radius: 16px !important;
+            }
+
+            .ico {
+              width: 43px;
+              height: 43px;
+            }
+
+            #go, .go {
+              min-width: 56px;
+              padding: 0 11px !important;
             }
           }
           CSS
@@ -258,16 +522,19 @@ jobs:
             function applyTheme(theme) {
               root.dataset.theme = theme;
               const button = document.getElementById('theme-toggle');
+
               if (button) {
                 button.textContent = theme === 'dark' ? '☀' : '☾';
                 button.setAttribute(
                   'aria-label',
                   theme === 'dark' ? '切换浅色模式' : '切换深色模式'
                 );
+                button.title = theme === 'dark' ? '切换浅色模式' : '切换深色模式';
               }
+
               const meta = document.querySelector('meta[name="theme-color"]');
               if (meta) {
-                meta.content = theme === 'dark' ? '#10131a' : '#f5f7fb';
+                meta.content = theme === 'dark' ? '#10141e' : '#f4f6fb';
               }
             }
 
@@ -275,6 +542,7 @@ jobs:
             try {
               saved = localStorage.getItem(key) || 'light';
             } catch (_) {}
+
             applyTheme(saved);
 
             function addToggle() {
@@ -285,9 +553,14 @@ jobs:
               button.id = 'theme-toggle';
               button.className = 'theme-toggle';
               button.type = 'button';
+              button.textContent = '☾';
               button.title = '切换主题';
+              button.setAttribute('aria-label', '切换深色模式');
+
               button.addEventListener('click', () => {
-                const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+                const next =
+                  root.dataset.theme === 'dark' ? 'light' : 'dark';
+
                 applyTheme(next);
                 try {
                   localStorage.setItem(key, next);
@@ -319,19 +592,19 @@ jobs:
           js = '<script src="ui-redesign.js"></script>'
 
           if css not in html:
-              if "</head>" not in html.lower():
-                  raise SystemExit("ERROR: cannot find </head> in index.html")
               pos = html.lower().rfind("</head>")
+              if pos < 0:
+                  raise SystemExit("ERROR: cannot find </head> in index.html")
               html = html[:pos] + css + "\n" + html[pos:]
 
           if js not in html:
-              if "</body>" not in html.lower():
-                  raise SystemExit("ERROR: cannot find </body> in index.html")
               pos = html.lower().rfind("</body>")
+              if pos < 0:
+                  raise SystemExit("ERROR: cannot find </body> in index.html")
               html = html[:pos] + js + "\n" + html[pos:]
 
           p.write_text(html, encoding="utf-8")
-          print("UI redesign files and links added.")
+          print("Modern UI redesign applied.")
           PY
 
       - name: Set up Node.js
@@ -373,6 +646,40 @@ jobs:
           PY
           npx cap init "聚搜" com.jusou.app --web-dir=www
           npx cap add android
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path("android/app/build.gradle")
+          if not p.exists():
+              raise SystemExit("ERROR: android/app/build.gradle not found")
+
+          s = p.read_text(encoding="utf-8")
+
+          s, code_count = re.subn(
+              r'\bversionCode\s+\d+',
+              'versionCode 2',
+              s,
+              count=1
+          )
+
+          s, name_count = re.subn(
+              r'\bversionName\s+["\'][^"\']*["\']',
+              'versionName "1.1.0"',
+              s,
+              count=1
+          )
+
+          if code_count != 1 or name_count != 1:
+              raise SystemExit(
+                  "ERROR: 无法自动修改版本号，请检查 android/app/build.gradle"
+              )
+
+          p.write_text(s, encoding="utf-8")
+          print("App version updated to 1.1.0 (versionCode 2)")
+          PY
+
           python3 - <<'PY'
           from pathlib import Path
           import re
