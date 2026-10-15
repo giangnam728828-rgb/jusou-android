@@ -88,6 +88,252 @@ jobs:
           }
           EOF
 
+      - name: Apply modern UI redesign
+        run: |
+          set -e
+
+          cat > www/ui-redesign.css <<'CSS'
+          :root {
+            color-scheme: light;
+            --bg: #f5f7fb;
+            --card: #ffffff;
+            --txt: #192238;
+            --sub: #748096;
+            --line: #e5eaf2;
+            --acc: #4263eb;
+            --shadow: 0 5px 20px rgba(30, 45, 80, .06);
+          }
+
+          :root[data-theme="dark"] {
+            color-scheme: dark;
+            --bg: #10131a;
+            --card: #191e28;
+            --txt: #f0f3fa;
+            --sub: #9ba6ba;
+            --line: #2b3342;
+            --acc: #8299ff;
+            --shadow: 0 5px 20px rgba(0, 0, 0, .15);
+          }
+
+          html {
+            background: var(--bg);
+          }
+
+          body {
+            background: var(--bg) !important;
+            color: var(--txt) !important;
+            transition: background .2s, color .2s;
+          }
+
+          .page {
+            max-width: 760px;
+            margin: 0 auto;
+            padding-left: 16px;
+            padding-right: 16px;
+          }
+
+          header, .brand {
+            color: var(--txt) !important;
+          }
+
+          .brand {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+          }
+
+          .brand > h1 {
+            margin-right: auto;
+          }
+
+          .brand-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+          }
+
+          .logo {
+            border-radius: 14px !important;
+            box-shadow: 0 5px 14px rgba(66, 99, 235, .22);
+          }
+
+          h1, h2, h3, p, label {
+            color: var(--txt);
+          }
+
+          .theme-toggle {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: var(--card);
+            color: var(--txt);
+            font-size: 21px;
+          }
+
+          input, select, textarea, .bar, .ipt {
+            background: var(--card) !important;
+            color: var(--txt) !important;
+            border-color: var(--line) !important;
+            border-radius: 15px !important;
+          }
+
+          .bar {
+            box-shadow: var(--shadow);
+          }
+
+          .go, button.primary {
+            border-radius: 14px;
+          }
+
+          .chip, .tabs, .card, .mitem, .sheet,
+          .tabbar, .tb {
+            color: var(--txt);
+          }
+
+          .chip, .card, .mitem, .sheet {
+            background: var(--card) !important;
+            border-color: var(--line) !important;
+            box-shadow: var(--shadow);
+          }
+
+          .grid {
+            gap: 12px;
+          }
+
+          .card {
+            border-radius: 18px !important;
+            transition: transform .15s;
+          }
+
+          .card:active, .chip:active {
+            transform: scale(.98);
+          }
+
+          .nm {
+            color: var(--txt) !important;
+          }
+
+          .tabbar {
+            background: var(--card) !important;
+            border-color: var(--line) !important;
+          }
+
+          .sub, .desc, .hint, .nm small {
+            color: var(--sub) !important;
+          }
+
+          .mask {
+            background: rgba(10, 15, 28, .48);
+          }
+
+          ::placeholder {
+            color: var(--sub) !important;
+            opacity: .8;
+          }
+
+          button {
+            cursor: pointer;
+          }
+
+          @media (max-width: 480px) {
+            .page {
+              padding-left: 14px;
+              padding-right: 14px;
+            }
+
+            .grid {
+              gap: 10px;
+            }
+          }
+          CSS
+
+          cat > www/ui-redesign.js <<'JS'
+          (() => {
+            const root = document.documentElement;
+            const key = 'jusou_theme';
+
+            function applyTheme(theme) {
+              root.dataset.theme = theme;
+              const button = document.getElementById('theme-toggle');
+              if (button) {
+                button.textContent = theme === 'dark' ? '☀' : '☾';
+                button.setAttribute(
+                  'aria-label',
+                  theme === 'dark' ? '切换浅色模式' : '切换深色模式'
+                );
+              }
+              const meta = document.querySelector('meta[name="theme-color"]');
+              if (meta) {
+                meta.content = theme === 'dark' ? '#10131a' : '#f5f7fb';
+              }
+            }
+
+            let saved = 'light';
+            try {
+              saved = localStorage.getItem(key) || 'light';
+            } catch (_) {}
+            applyTheme(saved);
+
+            function addToggle() {
+              const brand = document.querySelector('.brand');
+              if (!brand || document.getElementById('theme-toggle')) return;
+
+              const button = document.createElement('button');
+              button.id = 'theme-toggle';
+              button.className = 'theme-toggle';
+              button.type = 'button';
+              button.title = '切换主题';
+              button.addEventListener('click', () => {
+                const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+                applyTheme(next);
+                try {
+                  localStorage.setItem(key, next);
+                } catch (_) {}
+              });
+
+              brand.appendChild(button);
+              applyTheme(root.dataset.theme || 'light');
+            }
+
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', addToggle);
+            } else {
+              addToggle();
+            }
+          })();
+          JS
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("www/index.html")
+          if not p.exists():
+              raise SystemExit("ERROR: www/index.html not found")
+
+          html = p.read_text(encoding="utf-8")
+
+          css = '<link rel="stylesheet" href="ui-redesign.css">'
+          js = '<script src="ui-redesign.js"></script>'
+
+          if css not in html:
+              if "</head>" not in html.lower():
+                  raise SystemExit("ERROR: cannot find </head> in index.html")
+              pos = html.lower().rfind("</head>")
+              html = html[:pos] + css + "\n" + html[pos:]
+
+          if js not in html:
+              if "</body>" not in html.lower():
+                  raise SystemExit("ERROR: cannot find </body> in index.html")
+              pos = html.lower().rfind("</body>")
+              html = html[:pos] + js + "\n" + html[pos:]
+
+          p.write_text(html, encoding="utf-8")
+          print("UI redesign files and links added.")
+          PY
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
