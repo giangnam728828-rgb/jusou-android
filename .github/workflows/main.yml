@@ -212,9 +212,12 @@ jobs:
           }
 
           #kw {
+            display: block;
             min-width: 0;
-            flex: 1;
+            width: 0;
+            flex: 1 1 0%;
             height: 44px;
+            margin: 0 !important;
             padding: 0 8px !important;
             border: 0 !important;
             outline: none;
@@ -229,7 +232,14 @@ jobs:
           }
 
           #clr {
-            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            height: 40px;
+            margin: 0 !important;
+            align-self: center;
+            white-space: nowrap;
           }
 
           #go, .go {
