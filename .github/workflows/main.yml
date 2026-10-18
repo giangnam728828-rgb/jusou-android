@@ -323,6 +323,36 @@ jobs:
             align-items: stretch;
           }
 
+          /* 搜索框聚焦效果 */
+          #kw:focus {
+            box-shadow: 0 0 0 3px rgba(82, 109, 245, .14) !important;
+            border-radius: 10px;
+          }
+
+          /* 搜索卡片图标细节 */
+          .ico {
+            border: 1px solid var(--line);
+            background: linear-gradient(145deg, var(--soft), var(--card)) !important;
+          }
+
+          /* 长名称最多显示两行 */
+          .nm {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            overflow-wrap: anywhere;
+          }
+
+          /* 底部导航排列更整齐 */
+          .tb {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+          }
+
           .card {
             position: relative;
             display: flex;
