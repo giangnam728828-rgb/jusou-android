@@ -1,0 +1,45 @@
+name: Generate Jusou Signing Key
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Generate keystore
+        env:
+          STORE_PASS: ${{ secrets.JUSOU_KEYSTORE_PASSWORD }}
+          KEY_PASS: ${{ secrets.JUSOU_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$STORE_PASS"
+          test -n "$KEY_PASS"
+
+          keytool -genkeypair \
+            -keystore jusou-release.jks \
+            -storetype JKS \
+            -alias jusou \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass "$STORE_PASS" \
+            -keypass "$KEY_PASS" \
+            -dname "CN=Jusou, OU=App, O=Jusou, L=Unknown, ST=Unknown, C=CN"
+
+          keytool -list \
+            -keystore jusou-release.jks \
+            -storepass "$STORE_PASS" \
+            -alias jusou
+
+          base64 -w 0 jusou-release.jks > jusou-keystore-base64.txt
+
+      - name: Upload encoded keystore
+        uses: actions/upload-artifact@v4
+        with:
+          name: jusou-signing-key
+          path: jusou-keystore-base64.txt
+          retention-days: 1
