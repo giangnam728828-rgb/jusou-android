@@ -637,6 +637,10 @@ jobs:
           java-version: 21
 
       - name: Create Capacitor project
+        env:
+          JUSOU_KEYSTORE_BASE64: ${{ secrets.JUSOU_KEYSTORE_BASE64 }}
+          JUSOU_KEYSTORE_PASSWORD: ${{ secrets.JUSOU_KEYSTORE_PASSWORD }}
+          JUSOU_KEY_PASSWORD: ${{ secrets.JUSOU_KEY_PASSWORD }}
         run: |
           set -e
           npm init -y
@@ -666,8 +670,71 @@ jobs:
           npx cap add android
 
           python3 - <<'PY'
+          import os
+          import base64
           from pathlib import Path
           import re
+
+          encoded = os.environ.get("JUSOU_KEYSTORE_BASE64", "").strip()
+          store_pass = os.environ.get("JUSOU_KEYSTORE_PASSWORD", "")
+          key_pass = os.environ.get("JUSOU_KEY_PASSWORD", "")
+
+          if not encoded or not store_pass or not key_pass:
+              raise SystemExit("ERROR: signing secrets are missing")
+
+          try:
+              keystore = base64.b64decode(encoded, validate=True)
+          except Exception:
+              raise SystemExit("ERROR: keystore Base64 is invalid")
+
+          if len(keystore) < 100:
+              raise SystemExit("ERROR: keystore file is too small")
+
+          Path("android/app/jusou-release.jks").write_bytes(keystore)
+
+          p = Path("android/app/build.gradle")
+          s = p.read_text(encoding="utf-8")
+
+          if "jusouFixed" in s:
+              raise SystemExit("ERROR: signing configuration already exists")
+
+          signing = '''
+              signingConfigs {
+                  jusouFixed {
+                      storeFile file("jusou-release.jks")
+                      storePassword System.getenv("JUSOU_KEYSTORE_PASSWORD")
+                      keyAlias "jusou"
+                      keyPassword System.getenv("JUSOU_KEY_PASSWORD")
+                  }
+              }
+          '''
+
+          s, n = re.subn(
+              r'\bandroid\s*\{',
+              lambda m: m.group(0) + signing,
+              s,
+              count=1
+          )
+          if n != 1:
+              raise SystemExit("ERROR: android block not found")
+
+          s, n = re.subn(
+              r'(\bbuildTypes\s*\{)',
+              r'\1\n        debug {\n            signingConfig signingConfigs.jusouFixed\n        }\n',
+              s,
+              count=1
+          )
+          if n != 1:
+              raise SystemExit("ERROR: buildTypes block not found")
+
+          p.write_text(s, encoding="utf-8")
+          print("Persistent APK signing configured.")
+          PY
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          import os
 
           p = Path("android/app/build.gradle")
           if not p.exists():
@@ -675,16 +742,20 @@ jobs:
 
           s = p.read_text(encoding="utf-8")
 
+          run_number = int(os.environ.get("GITHUB_RUN_NUMBER", "1"))
+          next_code = run_number + 2
+          next_name = f"1.1.{run_number}"
+
           s, code_count = re.subn(
               r'\bversionCode\s+\d+',
-              'versionCode 2',
+              f'versionCode {next_code}',
               s,
               count=1
           )
 
           s, name_count = re.subn(
               r'\bversionName\s+["\'][^"\']*["\']',
-              'versionName "1.1.0"',
+              f'versionName "{next_name}"',
               s,
               count=1
           )
@@ -695,7 +766,7 @@ jobs:
               )
 
           p.write_text(s, encoding="utf-8")
-          print("App version updated to 1.1.0 (versionCode 2)")
+          print(f"App version updated to {next_name} (versionCode {next_code})")
           PY
 
           python3 - <<'PY'
@@ -718,6 +789,9 @@ jobs:
 
       - name: Build debug APK
         working-directory: android
+        env:
+          JUSOU_KEYSTORE_PASSWORD: ${{ secrets.JUSOU_KEYSTORE_PASSWORD }}
+          JUSOU_KEY_PASSWORD: ${{ secrets.JUSOU_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug
