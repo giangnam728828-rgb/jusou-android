@@ -469,27 +469,30 @@ jobs:
             backdrop-filter: blur(5px);
           }
 
+          /* 第一次替换：底部导航栏 */
           .tabbar {
             position: fixed;
             z-index: 20;
             right: 12px;
-            bottom: max(10px, env(safe-area-inset-bottom));
+            bottom: max(3px, env(safe-area-inset-bottom));
             left: 12px;
             display: flex;
             justify-content: space-around;
             max-width: 736px;
             margin: 0 auto;
-            padding: 8px 5px;
+            padding: 4px 5px !important;
             border: 1px solid var(--line) !important;
-            border-radius: 20px !important;
+            border-radius: 18px !important;
             background: var(--card) !important;
-            box-shadow: 0 8px 28px rgba(30, 43, 75, .13);
+            box-shadow: 0 4px 16px rgba(30, 43, 75, .10);
           }
 
+          /* 第一次替换：靠近 .tabbar 的第二处 .tb */
           .tb {
             flex: 1;
             min-width: 0;
-            padding: 9px 2px !important;
+            min-height: 48px;
+            padding: 6px 2px !important;
             border: 0 !important;
             border-radius: 13px !important;
             background: transparent !important;
@@ -559,6 +562,68 @@ jobs:
               min-width: 56px;
               padding: 0 11px !important;
             }
+          }
+
+          /* 追加：搜索区域：更明显的层次和玻璃质感 */
+          .bar {
+            border: 1px solid rgba(130, 145, 190, .24) !important;
+            background: color-mix(in srgb, var(--card) 86%, var(--soft)) !important;
+            box-shadow: 
+              0 8px 24px rgba(45, 62, 110, .08),
+              inset 0 1px 0 rgba(255, 255, 255, .65) !important;
+          }
+
+          /* 追加：搜索按钮：更鲜明的渐变 */
+          #go, .go {
+            background: linear-gradient(135deg, #647cf8, #9270f8) !important;
+            box-shadow: 0 5px 14px rgba(92, 105, 235, .28) !important;
+          }
+
+          /* 追加：首页卡片：更明显的圆角、层次和细边框 */
+          .card {
+            border: 1px solid rgba(130, 145, 190, .20) !important;
+            border-radius: 22px !important;
+            background: linear-gradient(
+              155deg,
+              var(--card),
+              color-mix(in srgb, var(--soft) 38%, var(--card))
+            ) !important;
+            box-shadow: 
+              0 5px 16px rgba(40, 55, 100, .06),
+              inset 0 1px 0 rgba(255, 255, 255, .7) !important;
+          }
+
+          /* 追加：图标底座：与卡片形成视觉区分 */
+          .ico {
+            border: 0 !important;
+            border-radius: 17px !important;
+            background: linear-gradient(145deg, #e7ecff, #f6eaff) !important;
+          }
+
+          /* 追加：底部当前页面：突出选中状态 */
+          .tb.active, .tb.on, .tb[aria-current="page"] {
+            background: #e9edff !important;
+            color: #4e65e8 !important;
+            font-weight: 750;
+          }
+
+          /* 追加：深色模式下单独调整卡片质感 */
+          :root[data-theme="dark"] .card {
+            background: linear-gradient(155deg, #202a3c, #1a2130) !important;
+            box-shadow: 
+              0 6px 18px rgba(0, 0, 0, .18),
+              inset 0 1px 0 rgba(255, 255, 255, .035) !important;
+          }
+
+          :root[data-theme="dark"] .ico {
+            background: linear-gradient(145deg, #303d60, #302747) !important;
+          }
+
+          :root[data-theme="dark"] .tb.active,
+          :root[data-theme="dark"] .tb.on,
+          :root[data-theme="dark"] .tb[aria-current="page"] {
+            background: #303b60 !important;
+            color: #b4c0ff !important;
           }
           CSS
 
