@@ -111,63 +111,78 @@ jobs:
           cat > www/ui-redesign.css <<'CSS'
           :root {
             color-scheme: light;
-            --bg: #f4f6fb;
+            --bg: #eef1fb;
             --card: #ffffff;
-            --txt: #202943;
-            --sub: #7d879d;
-            --line: #e7ebf4;
-            --acc: #526df5;
-            --acc2: #7c5cfa;
-            --shadow: 0 5px 20px rgba(36, 53, 99, .07);
-            --soft: #edf1ff;
-            --glass: rgba(255, 255, 255, .62);
-            --glass-line: rgba(255, 255, 255, .78);
-            --glass-shadow: 0 10px 30px rgba(40, 60, 120, .16);
-            --glow1: rgba(110, 145, 255, .34);
-            --glow2: rgba(170, 125, 255, .22);
+            --txt: #1c2338;
+            --sub: #6f7a93;
+            --acc: #4f6bf6;
+            --acc2: #8a5cf7;
+            --line: rgba(110, 125, 170, .20);
+            --hair: rgba(110, 125, 170, .18);
+            --b1: rgba(96, 130, 255, .55);
+            --b2: rgba(190, 120, 255, .45);
+            --b3: rgba(80, 205, 255, .40);
+            --b4: rgba(255, 140, 190, .36);
+            --g-bg: linear-gradient(135deg, rgba(255, 255, 255, .66), rgba(255, 255, 255, .32));
+            --g-line: rgba(255, 255, 255, .72);
+            --g-rim: inset 0 1px 1px rgba(255, 255, 255, .95), inset 0 -1px 1px rgba(255, 255, 255, .35), inset 0 0 14px rgba(255, 255, 255, .22);
+            --g-drop: 0 10px 30px rgba(52, 70, 140, .16);
+            --g-blur: blur(22px) saturate(185%);
+            --sheet-bg: rgba(255, 255, 255, .78);
+            --field: rgba(255, 255, 255, .55);
+            --plate: rgba(255, 255, 255, .80);
             --fs: 1;
             --lift: max(env(safe-area-inset-bottom, 0px), 14px);
           }
 
           :root[data-theme="dark"] {
             color-scheme: dark;
-            --bg: #10141e;
-            --card: #1a2130;
-            --txt: #eef2ff;
-            --sub: #a0abc1;
-            --line: #2c3548;
-            --acc: #8ca0ff;
-            --acc2: #ad91ff;
-            --shadow: 0 6px 22px rgba(0, 0, 0, .18);
-            --soft: #252e48;
-            --glass: rgba(30, 38, 56, .58);
-            --glass-line: rgba(255, 255, 255, .10);
-            --glass-shadow: 0 10px 30px rgba(0, 0, 0, .45);
-            --glow1: rgba(90, 120, 255, .26);
-            --glow2: rgba(150, 100, 255, .16);
+            --bg: #0b0f1a;
+            --card: #171e30;
+            --txt: #edf1ff;
+            --sub: #9aa6c0;
+            --acc: #8ea2ff;
+            --acc2: #b194ff;
+            --line: rgba(255, 255, 255, .12);
+            --hair: rgba(255, 255, 255, .10);
+            --b1: rgba(60, 90, 255, .42);
+            --b2: rgba(140, 70, 255, .34);
+            --b3: rgba(30, 160, 220, .26);
+            --b4: rgba(230, 70, 150, .24);
+            --g-bg: linear-gradient(135deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, .05));
+            --g-line: rgba(255, 255, 255, .17);
+            --g-rim: inset 0 1px 1px rgba(255, 255, 255, .28), inset 0 -1px 1px rgba(255, 255, 255, .05), inset 0 0 14px rgba(255, 255, 255, .04);
+            --g-drop: 0 12px 32px rgba(0, 0, 0, .45);
+            --sheet-bg: rgba(24, 30, 48, .80);
+            --field: rgba(255, 255, 255, .08);
+            --plate: rgba(238, 242, 255, .90);
           }
 
-          * {
-            box-sizing: border-box;
-          }
-
+          /* ---------- 背景：彩色光斑，让玻璃有东西可以折射 ---------- */
           html {
             background: var(--bg) !important;
             scroll-behavior: smooth;
           }
 
           body {
-            margin: 0;
-            background:
-              radial-gradient(120% 70% at 12% -8%, var(--glow1), transparent 62%) top / 100% 440px no-repeat,
-              radial-gradient(90% 55% at 105% 2%, var(--glow2), transparent 58%) top / 100% 440px no-repeat,
-              var(--bg) !important;
+            background: transparent !important;
             color: var(--txt) !important;
             padding-bottom: 0 !important;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
               "Noto Sans SC", "Microsoft YaHei", sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            transition: color .2s;
+          }
+
+          body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background:
+              radial-gradient(60% 38% at 12% 6%, var(--b1), transparent 70%),
+              radial-gradient(55% 36% at 92% 14%, var(--b2), transparent 70%),
+              radial-gradient(70% 40% at 80% 78%, var(--b3), transparent 72%),
+              radial-gradient(60% 36% at 6% 90%, var(--b4), transparent 72%);
           }
 
           .page {
@@ -177,379 +192,410 @@ jobs:
             padding: 18px 16px calc(var(--lift) + 112px) !important;
           }
 
+          /* ---------- 顶部：居中品牌 + 大搜索框（类似 Chrome 新标签页） ---------- */
           header {
-            margin-bottom: 20px;
+            position: relative;
+            text-align: center;
           }
 
           .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
-            color: var(--txt) !important;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 4px;
           }
 
           .logo {
-            width: 46px;
-            height: 46px;
-            flex-shrink: 0;
-            border-radius: 15px !important;
-            box-shadow: 0 5px 14px rgba(82, 109, 245, .23);
+            width: 64px;
+            height: 64px;
+            border-radius: 21px !important;
+            font-size: 28px;
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, .55), 0 10px 24px rgba(79, 107, 246, .32);
           }
 
           .brand h1, h1 {
             color: var(--txt) !important;
-            font-size: 23px;
+            font-size: 26px;
             font-weight: 800;
-            letter-spacing: -.6px;
+            letter-spacing: 1px;
           }
 
           .sub {
+            margin: 2px 0 20px !important;
             color: var(--sub) !important;
-            font-size: 12px;
-            line-height: 1.7;
+            font-size: 12.5px;
+            text-align: center;
           }
 
           .theme-toggle {
+            position: absolute;
+            top: calc(env(safe-area-inset-top, 0px) + 22px);
+            right: 0;
             display: grid;
             place-items: center;
             width: 42px;
             height: 42px;
-            flex-shrink: 0;
-            margin-left: auto;
             padding: 0;
-            border: 1px solid var(--glass-line);
-            border-radius: 15px;
-            background: var(--glass);
-            -webkit-backdrop-filter: blur(14px);
-            backdrop-filter: blur(14px);
+            border: 1px solid var(--g-line);
+            border-radius: 50%;
+            background: var(--g-bg);
+            -webkit-backdrop-filter: var(--g-blur);
+            backdrop-filter: var(--g-blur);
+            box-shadow: var(--g-rim), var(--g-drop);
             color: var(--txt);
-            font-size: 21px;
-            box-shadow: var(--shadow);
+            font-size: 20px;
           }
 
           .bar {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            min-height: 60px;
-            padding: 7px 8px !important;
-            border: 1px solid var(--glass-line) !important;
+            max-width: 600px;
+            height: 58px !important;
+            margin: 0 auto;
+            padding: 0 7px 0 8px !important;
+            gap: 6px;
+            border: 1px solid var(--g-line) !important;
             border-radius: 999px !important;
-            background: var(--glass) !important;
-            -webkit-backdrop-filter: blur(18px) saturate(170%);
-            backdrop-filter: blur(18px) saturate(170%);
-            box-shadow: var(--glass-shadow) !important;
+            background: var(--g-bg) !important;
+            -webkit-backdrop-filter: var(--g-blur);
+            backdrop-filter: var(--g-blur);
+            box-shadow: var(--g-rim), var(--g-drop) !important;
           }
 
-          #engbtn, .engbtn {
-            flex-shrink: 0;
-            border-radius: 14px !important;
+          .engbtn {
+            height: 44px;
+            border-radius: 999px;
           }
 
-          /* 恢复原本的 #kw 样式 */
+          .engbtn em {
+            width: 34px;
+            height: 34px;
+            border-radius: 12px;
+          }
+
+          .engbtn em img {
+            border-radius: 12px;
+            background: #fff !important;
+          }
+
           #kw {
             min-width: 0;
             flex: 1;
-            height: 44px;
-            padding: 0 8px !important;
+            height: 100%;
+            padding: 0 6px !important;
             border: 0 !important;
             outline: none;
             background: transparent !important;
             color: var(--txt) !important;
-            font-size: 15px;
+            font-size: 16px;
             box-shadow: none !important;
           }
 
-          #kw:focus {
-            outline: none;
+          .bar .clr {
+            background: var(--hair);
           }
 
-          /* 恢复原本的 #clr 样式 */
-          #clr {
-            flex-shrink: 0;
-          }
-
-          #go, .go {
-            min-width: 66px;
+          .go {
             height: 44px;
-            flex-shrink: 0;
-            padding: 0 18px !important;
-            border: 0 !important;
-            border-radius: 999px !important;
-            background: linear-gradient(135deg, var(--acc), var(--acc2)) !important;
-            color: #fff !important;
-            font-size: 14px;
+            padding: 0 20px;
+            border-radius: 999px;
+            font-size: 15px;
             font-weight: 700;
-            box-shadow: 0 4px 12px rgba(82, 109, 245, .22);
-          }
-
-          #tabs, .tabs {
-            display: flex;
-            gap: 8px;
-            margin: 18px 0 16px;
-            padding: 4px 0 7px;
-            overflow-x: auto;
-            scrollbar-width: none;
-          }
-
-          #tabs::-webkit-scrollbar, .tabs::-webkit-scrollbar {
-            display: none;
-          }
-
-          .tab, .chip {
-            flex-shrink: 0;
-            border: 1px solid var(--line) !important;
-            border-radius: 13px !important;
-            background: var(--card) !important;
-            color: var(--sub) !important;
-            transition: background .15s, color .15s;
-          }
-
-          .tab.act, .tab.active, .tab.on, .chip.active, .chip.on,
-          .tab[aria-selected="true"] {
-            border-color: transparent !important;
             background: linear-gradient(135deg, var(--acc), var(--acc2)) !important;
-            color: #fff !important;
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, .45), 0 6px 16px rgba(110, 100, 240, .38);
+          }
+
+          /* ---------- 搜索历史、分类标签：玻璃胶囊 ---------- */
+          .chip, .tab, .scat {
+            border: 1px solid var(--g-line);
+            background: var(--g-bg);
+            box-shadow: var(--g-rim);
+            color: var(--sub);
+          }
+
+          .tab.act, .scat.on {
+            border-color: transparent;
+            background: linear-gradient(135deg, var(--acc), var(--acc2));
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, .4), 0 6px 14px rgba(110, 100, 240, .30);
+            color: #fff;
             font-weight: 700;
+          }
+
+          /* “清空”按钮：原页面把搜索框的 .clr（28px 圆形）也套在了它身上，导致文字被圆形裁掉 */
+          .hist .chip.clr {
+            display: inline-flex;
+            align-items: center;
+            width: auto;
+            height: auto;
+            min-width: 0;
+            padding: 5px 13px;
+            border: 1px dashed var(--acc);
+            border-radius: 999px;
+            background: transparent;
+            box-shadow: none;
+            color: var(--acc);
+            font-weight: 600;
+          }
+
+          .tabs {
+            margin: 18px 0 12px;
+            padding: 2px 0 6px;
+          }
+
+          .tab {
+            padding: 7px 14px;
           }
 
           .tools {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            margin: 8px 0 13px;
+            margin: 4px 0 14px;
           }
 
-          #cnt {
-            color: var(--sub);
-            font-size: 12px;
+          .addbtn {
+            border: 1px solid var(--g-line);
+            background: var(--g-bg);
+            box-shadow: var(--g-rim);
+            color: var(--acc);
           }
 
-          #add, .addbtn {
-            border: 1px solid var(--line) !important;
-            border-radius: 12px !important;
-            background: var(--card) !important;
-            color: var(--acc) !important;
-            font-size: 13px;
+          /* ---------- 站点：图标 + 文字（类似 Chrome 的快捷方式） ---------- */
+          .grid {
+            display: grid !important;
+            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+            gap: 16px 6px !important;
+          }
+
+          .card {
+            min-width: 0;
+            gap: 8px;
+            padding: 6px 2px 2px !important;
+            border: 0 !important;
+            border-radius: 18px;
+            background: none !important;
+            box-shadow: none !important;
+            color: var(--txt) !important;
+          }
+
+          .card:active {
+            transform: scale(.94);
+          }
+
+          .ico {
+            width: 58px;
+            height: 58px;
+            overflow: hidden;
+            border: 0 !important;
+            border-radius: 19px !important;
+            background: var(--g-bg) !important;
+            box-shadow: var(--g-drop);
+          }
+
+          .ico img {
+            padding: 10px;
+            border-radius: 19px;
+            background: var(--plate) !important;
+          }
+
+          .ico::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(160deg, rgba(255, 255, 255, .50), rgba(255, 255, 255, 0) 46%);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, .9), inset 0 0 0 1px rgba(255, 255, 255, .35);
+            pointer-events: none;
+          }
+
+          /* 图标加载失败时显示的文字 */
+          .ico em {
+            color: var(--acc);
+            font-size: 18px;
             font-weight: 700;
           }
 
-          .grid {
-            display: grid !important;
-            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-            gap: 12px !important;
-            align-items: stretch;
-          }
-
-          /* 搜索框聚焦效果 */
-          #kw:focus {
-            box-shadow: 0 0 0 3px rgba(82, 109, 245, .14) !important;
-            border-radius: 10px;
-          }
-
-          /* 搜索卡片图标细节 */
-          .ico {
-            border: 1px solid var(--line);
-            background: linear-gradient(145deg, var(--soft), var(--card)) !important;
-          }
-
-          /* 长名称最多显示两行 */
           .nm {
+            width: 100%;
             display: -webkit-box;
             -webkit-box-orient: vertical;
             -webkit-line-clamp: 2;
             overflow: hidden;
             overflow-wrap: anywhere;
-          }
-
-          /* 底部导航排列更整齐 */
-          .tb {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-          }
-
-          .card {
-            position: relative;
-            display: flex;
-            min-width: 0;
-            min-height: 116px;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 16px 6px 13px !important;
-            overflow: hidden;
-            border: 1px solid var(--line) !important;
-            border-radius: 19px !important;
-            background: var(--card) !important;
             color: var(--txt) !important;
-            box-shadow: var(--shadow) !important;
-            transition: transform .15s, border-color .15s;
-          }
-
-          .card:active {
-            transform: scale(.97);
-          }
-
-          .ico {
-            display: grid;
-            place-items: center;
-            width: 49px;
-            height: 49px;
-            flex-shrink: 0;
-            overflow: hidden;
-            border-radius: 16px !important;
-            background: var(--soft);
-          }
-
-          .ico img {
-            display: block;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border-radius: 13px;
-          }
-
-          /* 图标加载失败时显示的文字，底色是浅色，文字不能再用白色 */
-          .ico em {
-            color: var(--acc);
-            font-weight: 700;
-          }
-
-          .nm {
-            width: 100%;
-            overflow-wrap: anywhere;
-            color: var(--txt) !important;
-            font-size: 13px;
-            font-weight: 650;
-            line-height: 1.4;
-            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.35;
           }
 
           .nm small {
             color: var(--sub) !important;
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 400;
           }
 
           .star {
-            position: absolute;
-            top: 5px;
-            right: 7px;
-            z-index: 1;
-            font-size: 15px;
+            top: 0;
+            right: 4px;
+            font-size: 14px;
+            color: rgba(110, 125, 170, .45);
           }
 
-          .card button, .card .del, .card .edit {
-            max-width: 100%;
+          .star.on {
+            color: #ffb300;
           }
 
-          #settings, .sheet {
-            border-color: var(--line) !important;
-            border-radius: 22px !important;
-            background: var(--card) !important;
-            color: var(--txt) !important;
-            box-shadow: var(--shadow);
+          .card.ovs::after {
+            top: 0;
+            left: 4px;
           }
 
-          .sheet {
-            padding: 22px !important;
+          .del {
+            top: 0;
           }
 
-          .ipt, input, select, textarea {
-            max-width: 100%;
-            border: 1px solid var(--line) !important;
-            border-radius: 13px !important;
-            background: var(--bg) !important;
-            color: var(--txt) !important;
-            outline-color: var(--acc);
+          .edit {
+            bottom: 22px;
           }
 
-          input, select, textarea {
-            padding: 11px 12px;
-          }
-
-          button {
-            transition: transform .12s, opacity .12s;
-            cursor: pointer;
-          }
-
-          button:active {
-            opacity: .85;
+          /* ---------- 设置页、弹窗 ---------- */
+          #settings {
+            padding: 0 16px;
+            border: 1px solid var(--g-line);
+            border-radius: 24px;
+            background: var(--g-bg);
+            -webkit-backdrop-filter: var(--g-blur);
+            backdrop-filter: var(--g-blur);
+            box-shadow: var(--g-rim), var(--g-drop);
           }
 
           .mitem {
-            border-color: var(--line) !important;
-            border-radius: 14px !important;
-            background: var(--card) !important;
-            color: var(--txt) !important;
+            border-bottom: 1px solid var(--hair);
+            background: transparent;
+            color: var(--txt);
           }
 
           .mask {
-            background: rgba(10, 16, 32, .56) !important;
-            backdrop-filter: blur(5px);
+            background: rgba(20, 28, 60, .30);
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
           }
 
-          /* 底部导航栏：玻璃悬浮胶囊。z-index 要低于弹窗，否则会盖住弹窗里的按钮 */
+          .sheet {
+            border: 1px solid var(--g-line);
+            border-bottom: 0;
+            border-radius: 28px 28px 0 0;
+            background: var(--sheet-bg);
+            -webkit-backdrop-filter: blur(30px) saturate(190%);
+            backdrop-filter: blur(30px) saturate(190%);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, .7);
+            color: var(--txt);
+          }
+
+          .ipt, .bk {
+            border: 1px solid var(--g-line);
+            background: var(--field);
+            color: var(--txt);
+          }
+
+          .acts button {
+            border-radius: 999px;
+          }
+
+          .acts .c {
+            border: 1px solid var(--g-line);
+            background: var(--g-bg);
+            box-shadow: var(--g-rim);
+            color: var(--sub);
+          }
+
+          .acts .s {
+            background: linear-gradient(135deg, var(--acc), var(--acc2));
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, .45), 0 6px 16px rgba(110, 100, 240, .36);
+          }
+
+          /* ---------- 底部导航：iOS 风格玻璃胶囊 + 图标 ---------- */
           .tabbar {
-            position: fixed;
             z-index: 8;
             right: 18px;
             bottom: calc(var(--lift) + 8px);
             left: 18px;
-            display: flex;
-            justify-content: space-around;
-            gap: 4px;
-            max-width: 460px;
+            max-width: 420px;
             margin: 0 auto;
-            padding: 5px !important;
-            border: 1px solid var(--glass-line) !important;
-            border-radius: 28px !important;
-            background: var(--glass) !important;
-            -webkit-backdrop-filter: blur(24px) saturate(180%);
-            backdrop-filter: blur(24px) saturate(180%);
-            box-shadow: var(--glass-shadow);
+            padding: 6px !important;
+            gap: 2px;
+            border: 1px solid var(--g-line);
+            border-radius: 30px;
+            background: var(--g-bg);
+            -webkit-backdrop-filter: var(--g-blur);
+            backdrop-filter: var(--g-blur);
+            box-shadow: var(--g-rim), var(--g-drop);
           }
 
           .tb {
-            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            height: auto;
+            min-height: 52px;
             min-width: 0;
-            min-height: 48px;
-            padding: 6px 2px !important;
-            border: 0 !important;
-            border-radius: 22px !important;
-            background: transparent !important;
-            color: var(--sub) !important;
-            font-size: 12px;
-            text-align: center;
+            padding: 6px 2px;
+            border-radius: 24px;
+            color: var(--sub);
+            font-size: 11px;
             transition: background .2s, color .2s;
           }
 
-          .tb.active, .tb.on, .tb[aria-current="page"] {
-            background: var(--soft) !important;
-            color: var(--acc) !important;
+          .tb::before {
+            content: "";
+            width: 22px;
+            height: 22px;
+            background: currentColor;
+            -webkit-mask: var(--ic) center / contain no-repeat;
+            mask: var(--ic) center / contain no-repeat;
+          }
+
+          .tb[data-v="home"] {
+            --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3 2 12h3v8h5v-5h4v5h5v-8h3z'/%3E%3C/svg%3E");
+          }
+
+          .tb[data-v="mine"] {
+            --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z'/%3E%3C/svg%3E");
+          }
+
+          .tb[data-v="fav"] {
+            --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpolygon points='12,2.5 14.9,8.6 21.5,9.4 16.6,14 17.9,20.6 12,17.3 6.1,20.6 7.4,14 2.5,9.4 9.1,8.6'/%3E%3C/svg%3E");
+          }
+
+          .tb[data-v="set"] {
+            --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z'/%3E%3C/svg%3E");
+          }
+
+          .tb.on {
+            background: linear-gradient(135deg, rgba(255, 255, 255, .78), rgba(255, 255, 255, .36));
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, .95), 0 4px 14px rgba(79, 107, 246, .20);
+            color: var(--acc);
             font-weight: 700;
           }
 
+          :root[data-theme="dark"] .tb.on {
+            background: linear-gradient(135deg, rgba(255, 255, 255, .20), rgba(255, 255, 255, .08));
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, .30), 0 4px 14px rgba(0, 0, 0, .30);
+          }
+
+          /* ---------- 返回顶部、提示条 ---------- */
           .top {
-            bottom: calc(var(--lift) + 84px) !important;
-            border-color: var(--glass-line) !important;
-            background: var(--glass) !important;
-            -webkit-backdrop-filter: blur(14px);
-            backdrop-filter: blur(14px);
+            bottom: calc(var(--lift) + 92px);
+            border: 1px solid var(--g-line);
+            background: var(--g-bg);
+            -webkit-backdrop-filter: var(--g-blur);
+            backdrop-filter: var(--g-blur);
+            box-shadow: var(--g-rim), var(--g-drop);
           }
 
           .toast {
-            bottom: calc(var(--lift) + 84px) !important;
-          }
-
-          .desc, .hint, label, h2, h3, p {
-            color: var(--txt);
+            bottom: calc(var(--lift) + 92px);
+            border: 1px solid rgba(255, 255, 255, .14);
+            background: rgba(22, 26, 44, .74);
+            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(16px);
           }
 
           ::placeholder {
@@ -558,120 +604,31 @@ jobs:
           }
 
           @media (min-width: 520px) {
-            .page {
-              padding: 24px 22px calc(var(--lift) + 112px) !important;
-            }
-
-            .grid {
-              grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-              gap: 14px !important;
-            }
-
-            .card {
-              min-height: 126px;
-            }
-          }
-
-          @media (min-width: 700px) {
             .grid {
               grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
             }
           }
 
-          @media (max-width: 360px) {
-            .page {
-              padding-right: 11px !important;
-              padding-left: 11px !important;
-            }
-
+          @media (min-width: 700px) {
             .grid {
-              gap: 8px !important;
-            }
-
-            .card {
-              min-height: 105px;
-              padding: 12px 4px !important;
-              border-radius: 16px !important;
-            }
-
-            .ico {
-              width: 43px;
-              height: 43px;
-            }
-
-            #go, .go {
-              min-width: 56px;
-              padding: 0 13px !important;
+              grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
             }
           }
 
-          /* 追加：搜索按钮：更鲜明的渐变 */
-          #go, .go {
-            background: linear-gradient(135deg, #647cf8, #9270f8) !important;
-            box-shadow: 0 5px 14px rgba(92, 105, 235, .28) !important;
-          }
-
-          /* 追加：首页卡片：更明显的圆角、层次和细边框 */
-          .card {
-            border: 1px solid rgba(130, 145, 190, .20) !important;
-            border-radius: 22px !important;
-            background: linear-gradient(
-              155deg,
-              var(--card),
-              color-mix(in srgb, var(--soft) 38%, var(--card))
-            ) !important;
-            box-shadow: 
-              0 5px 16px rgba(40, 55, 100, .06),
-              inset 0 1px 0 rgba(255, 255, 255, .7) !important;
-          }
-
-          /* 追加：图标底座：与卡片形成视觉区分 */
-          .ico {
-            border: 0 !important;
-            border-radius: 17px !important;
-            background: linear-gradient(145deg, #e7ecff, #f6eaff) !important;
-          }
-
-          /* 追加：底部当前页面：玻璃上的半透明高亮 */
-          .tb.active, .tb.on, .tb[aria-current="page"] {
-            background: rgba(82, 109, 245, .16) !important;
-            color: #4e65e8 !important;
-            font-weight: 750;
-          }
-
-          /* 追加：深色模式下单独调整卡片质感 */
-          :root[data-theme="dark"] .card {
-            background: linear-gradient(155deg, #202a3c, #1a2130) !important;
-            box-shadow: 
-              0 6px 18px rgba(0, 0, 0, .18),
-              inset 0 1px 0 rgba(255, 255, 255, .035) !important;
-          }
-
-          :root[data-theme="dark"] .ico {
-            background: linear-gradient(145deg, #303d60, #302747) !important;
-          }
-
-          :root[data-theme="dark"] .tb.active,
-          :root[data-theme="dark"] .tb.on,
-          :root[data-theme="dark"] .tb[aria-current="page"] {
-            background: rgba(140, 160, 255, .22) !important;
-            color: #b4c0ff !important;
-          }
-
-          /* 追加：字体大小（设置里可调）。放在最后，覆盖前面的固定字号 */
-          .brand h1, h1 { font-size: calc(23px * var(--fs)); }
-          .sub { font-size: calc(12px * var(--fs)); }
-          #kw { font-size: calc(15px * var(--fs)); }
-          #go, .go { font-size: calc(14px * var(--fs)); }
+          /* ---------- 字体大小（设置里可调）。放在最后，覆盖前面的固定字号 ---------- */
+          .brand h1, h1 { font-size: calc(26px * var(--fs)); }
+          .sub { font-size: calc(12.5px * var(--fs)); }
+          #kw { font-size: calc(16px * var(--fs)); }
+          .go { font-size: calc(15px * var(--fs)); }
           .tab { font-size: calc(12.5px * var(--fs)); }
           .chip { font-size: calc(12px * var(--fs)); }
           #cnt { font-size: calc(12px * var(--fs)); }
-          #add, .addbtn { font-size: calc(13px * var(--fs)); }
-          .nm { font-size: calc(13px * var(--fs)); }
-          .nm small { font-size: calc(11px * var(--fs)); }
+          .addbtn { font-size: calc(13px * var(--fs)); }
+          .nm { font-size: calc(12px * var(--fs)); }
+          .nm small { font-size: calc(10.5px * var(--fs)); }
           .mitem { font-size: calc(14px * var(--fs)); }
           .mitem span { font-size: calc(12px * var(--fs)); }
-          .tb { font-size: calc(12px * var(--fs)); }
+          .tb { font-size: calc(11px * var(--fs)); }
           .hint { font-size: calc(11px * var(--fs)); }
           .hint.on { height: calc(17px * var(--fs)); }
           .hist.on { height: calc(31px * var(--fs)); }
@@ -742,7 +699,7 @@ jobs:
 
               const meta = document.querySelector('meta[name="theme-color"]');
               if (meta) {
-                meta.content = theme === 'dark' ? '#10141e' : '#f4f6fb';
+                meta.content = theme === 'dark' ? '#0b0f1a' : '#eef1fb';
               }
             }
 
