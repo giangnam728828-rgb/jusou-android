@@ -130,7 +130,7 @@ jobs:
             --g-blur: blur(22px) saturate(185%);
             --sheet-bg: rgba(255, 255, 255, .78);
             --field: rgba(255, 255, 255, .55);
-            --plate: rgba(255, 255, 255, .80);
+            --plate: #ffffff;
             --fs: 1;
             --lift: max(env(safe-area-inset-bottom, 0px), 14px);
           }
@@ -155,7 +155,7 @@ jobs:
             --g-drop: 0 12px 32px rgba(0, 0, 0, .45);
             --sheet-bg: rgba(24, 30, 48, .80);
             --field: rgba(255, 255, 255, .08);
-            --plate: rgba(238, 242, 255, .90);
+            --plate: #ffffff;
           }
 
           /* ---------- 背景：彩色光斑，让玻璃有东西可以折射 ---------- */
@@ -383,7 +383,6 @@ jobs:
             overflow: hidden;
             border: 0 !important;
             border-radius: 19px !important;
-            background: var(--g-bg) !important;
             box-shadow: var(--g-drop);
           }
 
@@ -403,11 +402,12 @@ jobs:
             pointer-events: none;
           }
 
-          /* 图标加载失败时显示的文字 */
+          /* 图标加载失败时显示的文字（站点自带的彩色底 + 白字） */
           .ico em {
-            color: var(--acc);
+            color: #fff;
             font-size: 18px;
             font-weight: 700;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, .22);
           }
 
           .nm {
@@ -881,6 +881,7 @@ jobs:
 
           python3 - <<'PY'
           from pathlib import Path
+          import re
 
           p = Path("www/index.html")
           if not p.exists():
@@ -890,12 +891,39 @@ jobs:
 
           css = '<link rel="stylesheet" href="ui-redesign.css">'
           js = '<script src="ui-redesign.js"></script>'
+          meta = '<meta name="referrer" content="no-referrer">'
 
           if css not in html:
               pos = html.lower().rfind("</head>")
               if pos < 0:
                   raise SystemExit("ERROR: cannot find </head> in index.html")
               html = html[:pos] + css + "\n" + html[pos:]
+
+          # 站点图标请求不带 Referer，避免被图标所在网站的防盗链拦截
+          if meta not in html:
+              html, n = re.subn(
+                  r"<head[^>]*>",
+                  lambda m: m.group(0) + "\n" + meta,
+                  html,
+                  count=1,
+                  flags=re.I
+              )
+              if n != 1:
+                  print("WARN: <head> not found, referrer meta not added")
+
+          # 图标加载顺序里补充 apple-touch-icon 作为备用来源
+          extra = (
+              'out.push(o.origin+"/apple-touch-icon.png");'
+              'if(root!==host)out.push(b+root+"/apple-touch-icon.png");'
+          )
+          html, n = re.subn(
+              r'(out\.push\(b\+root\+"/favicon\.png"\);\s*)return out;',
+              lambda m: m.group(1) + extra + "\n  return out;",
+              html,
+              count=1
+          )
+          if n != 1:
+              print("WARN: favSrcs not found, extra icon sources not added")
 
           if js not in html:
               pos = html.lower().rfind("</body>")
