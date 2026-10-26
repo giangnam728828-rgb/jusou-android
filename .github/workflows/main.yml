@@ -44,6 +44,43 @@ jobs:
 
           cp -a "$WEB_DIR"/. www/
 
+      - name: Bake AI service config
+        env:
+          AI_API_URL: ${{ secrets.AI_API_URL }}
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          AI_MODEL: ${{ secrets.AI_MODEL }}
+        run: |
+          set -e
+
+          AI_FILE="$(find www -type f -name ai.html -print -quit)"
+          if [ -z "$AI_FILE" ]; then
+            echo "ERROR: ai.html not found in www"
+            exit 1
+          fi
+
+          python3 - "$AI_FILE" <<'PY2'
+          import os
+          import sys
+          from pathlib import Path
+
+          p = Path(sys.argv[1])
+          s = p.read_text(encoding="utf-8")
+
+          url = os.environ.get("AI_API_URL", "").strip()
+          key = os.environ.get("AI_API_KEY", "").strip()
+          model = os.environ.get("AI_MODEL", "").strip()
+
+          # 支持只填基础地址，自动补全 /chat/completions
+          if url and not url.rstrip("/").endswith("chat/completions"):
+              url = url.rstrip("/") + "/chat/completions"
+
+          s = s.replace("__PROXY_URL__", url)
+          s = s.replace("__APP_TOKEN__", key)
+          s = s.replace("__MODEL__", model)
+          p.write_text(s, encoding="utf-8")
+          print("AI config baked | url:", "set" if url else "EMPTY", "| key:", "set" if key else "EMPTY", "| model:", model or "server default")
+          PY2
+
       - name: Inspect search navigation source
         run: |
           echo "=== Navigation-related matches ==="
