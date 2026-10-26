@@ -543,29 +543,18 @@ jobs:
             transition: background .2s, color .2s;
           }
 
+          /* 修复：导航图标已直接内联在各按钮的 <svg> 里，禁用旧的 ::before 遮罩方案。
+             旧方案给 AI 项漏定义了 --ic，遮罩失效后 background:currentColor
+             会渲染成一坨 22x22 的实心色块（AI 图标上方纯色 bug 的根源） */
           .tb::before {
-            content: "";
+            content: none !important;
+          }
+
+          .tb svg {
+            display: block;
             width: 22px;
             height: 22px;
-            background: currentColor;
-            -webkit-mask: var(--ic) center / contain no-repeat;
-            mask: var(--ic) center / contain no-repeat;
-          }
-
-          .tb[data-v="home"] {
-            --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3 2 12h3v8h5v-5h4v5h5v-8h3z'/%3E%3C/svg%3E");
-          }
-
-          .tb[data-v="mine"] {
-            --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z'/%3E%3C/svg%3E");
-          }
-
-          .tb[data-v="fav"] {
-            --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpolygon points='12,2.5 14.9,8.6 21.5,9.4 16.6,14 17.9,20.6 12,17.3 6.1,20.6 7.4,14 2.5,9.4 9.1,8.6'/%3E%3C/svg%3E");
-          }
-
-          .tb[data-v="set"] {
-            --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z'/%3E%3C/svg%3E");
+            flex: 0 0 auto;
           }
 
           .tb.on {
