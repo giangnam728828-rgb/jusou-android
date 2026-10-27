@@ -7,6 +7,9 @@ on:
       - main
       - test/in-app-search-navigation
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -1148,3 +1151,14 @@ jobs:
           name: jusou-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+
+      - name: Attach APK to latest Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          TAG=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName 2>/dev/null) || { echo "No release found, skip attach"; exit 0; }
+          cp "$APK" "jusou-${TAG}.apk"
+          gh release upload "$TAG" "jusou-${TAG}.apk" --repo "$GITHUB_REPOSITORY" --clobber
+          echo "Attached jusou-${TAG}.apk to release ${TAG}"
