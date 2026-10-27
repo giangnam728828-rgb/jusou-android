@@ -50,6 +50,7 @@ jobs:
           AI_API_KEY: ${{ secrets.AI_API_KEY }}
           AI_MODEL: ${{ secrets.AI_MODEL }}
           AI_VISION_MODEL: ${{ secrets.AI_VISION_MODEL }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: |
           set -e
 
@@ -76,12 +77,15 @@ jobs:
           if url and not url.rstrip("/").endswith("chat/completions"):
               url = url.rstrip("/") + "/chat/completions"
 
+          ds_key = os.environ.get("DEEPSEEK_API_KEY", "").strip()
+
           s = s.replace("__PROXY_URL__", url)
           s = s.replace("__APP_TOKEN__", key)
           s = s.replace("__MODEL__", model)
           s = s.replace("__VISION_MODEL__", vision)
+          s = s.replace("__DS_KEY__", ds_key)
           p.write_text(s, encoding="utf-8")
-          print("AI config baked | url:", "set" if url else "EMPTY", "| key:", "set" if key else "EMPTY", "| model:", model or "server default", "| vision:", vision or "none")
+          print("AI config baked | url:", "set" if url else "EMPTY", "| key:", "set" if key else "EMPTY", "| model:", model or "server default", "| vision:", vision or "none", "| deepseek:", "set" if ds_key else "EMPTY")
           PY2
 
       - name: Inspect search navigation source
